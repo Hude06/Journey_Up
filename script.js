@@ -3,7 +3,6 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let blockSize = 32
 let currentKey = new Map();
-let grounded = false;
 class Block {
     constructor(x,y,w,h) {
         this.bounds = new Rect(x*blockSize,y*blockSize,w*blockSize,h*blockSize)
@@ -12,30 +11,41 @@ class Block {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
-        if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)){
-            grounded = true;
-        } else {
-            grounded = false;
+        if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)) {
+            if (player.velocity > 0) {
+                player.grounded = true;
+                player.velocity = 0;
+                player.bounds.y = this.bounds.y - player.bounds.h + 1;
+                console.log("Intersecting");
+            }
         }
     }
 }
 class Player {
     constructor() {
-        this.bounds = new Rect(200,50,25,25)
+        this.bounds = new Rect(200,50,70,70)
         this.velocity = 1;
         this.gravity = 0.2;
         this.speed = 7;
+
+        this.grounded = false;
+        this.image = new Image();
+        this.image.src = "./assets/Gray.png"
     }
     draw() {
-        ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(this.image,this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
+        this.grounded = blocks.some(block => block.bounds.intersects(this.bounds) || this.bounds.intersects(block.bounds));
+        console.log("Grounded", this.grounded);
+    
         this.velocity += this.gravity;
         if (this.grounded) {
-            this.velocity = 1;
-            this.gravity = 0.2
-            for (let i = 0; i < blocks.length; i++) {
-                player.bounds.y = blocks[i].bounds.y - player.bounds.h
+            this.velocity = 0;
+            if (currentKey.get(" ")) {
+                this.bounds.y -= 20;
+                this.velocity -= 10;
             }
         }
         this.bounds.y += this.velocity;
@@ -45,22 +55,13 @@ class Player {
         if (currentKey.get("d")) {
             this.bounds.x += this.speed;
         }
-        if (grounded) {
-            if (currentKey.get(" ")) {
-                this.bounds.y -= 25
-                this.velocity -= 10
-            }
-        }
+
     }
 }
-function MakeBlock(x,y,w) {
-    blocks.push(new Block(x,y,w,1));
-}
+let block2 = new Block(0,43,10,1)
+let block1 = new Block(0,49,50,2)
 let player = new Player();
-let blocks = []
-MakeBlock(0,44,10)
-MakeBlock(0,49,50)
-console.log(blocks)
+let blocks = [block1,block2]
 function keyboardInit() {
     window.addEventListener("keydown", function (event) {
       currentKey.set(event.key, true);
@@ -74,14 +75,9 @@ function loop() {
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].draw();
         blocks[i].update();
-        if (player.bounds.intersects(blocks[i].bounds) || blocks[i].bounds.intersects(player.bounds)) {
-            player.grounded = true;
-        } else {
-            player.grounded = false;
-        }
     }
-    player.draw();
     player.update();
+    player.draw();
     requestAnimationFrame(loop);
 }
  
