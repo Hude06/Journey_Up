@@ -3,6 +3,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let blockSize = 32
 let currentKey = new Map();
+let grounded = false;
 class Block {
     constructor(x,y,w,h) {
         this.bounds = new Rect(x*blockSize,y*blockSize,w*blockSize,h*blockSize)
@@ -11,7 +12,11 @@ class Block {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
-
+        if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)){
+            grounded = true;
+        } else {
+            grounded = false;
+        }
     }
 }
 class Player {
@@ -20,7 +25,6 @@ class Player {
         this.velocity = 1;
         this.gravity = 0.2;
         this.speed = 7;
-        this.grounded = false;
     }
     draw() {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
@@ -41,7 +45,7 @@ class Player {
         if (currentKey.get("d")) {
             this.bounds.x += this.speed;
         }
-        if (this.grounded) {
+        if (grounded) {
             if (currentKey.get(" ")) {
                 this.bounds.y -= 25
                 this.velocity -= 10
