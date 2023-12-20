@@ -47,7 +47,7 @@ class Player {
         if (this.grounded) {
             this.velocity = 0;
             if (currentKey.get(" ")) {
-                this.bounds.y -= 50;
+                this.bounds.y -= 20;
                 this.velocity -= 10;
             }
         }
@@ -60,8 +60,8 @@ class Player {
         }
     }
 }
-let block1 = new Block(0,48,50,2)
-let block2 = new Block(0,38,10,2)
+let block2 = new Block(0,43,10,1)
+let block1 = new Block(0,49,50,2)
 let player = new Player();
 let blocks = [block1,block2]
 function keyboardInit() {
