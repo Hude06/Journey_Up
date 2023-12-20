@@ -5,18 +5,13 @@ let blockSize = 32
 let currentKey = new Map();
 class Block {
     constructor(x,y,w,h) {
-        this.bounds = new Rect(x*blockSize,y*blockSize,h*blockSize,w*blockSize)
+        this.bounds = new Rect(x*blockSize,y*blockSize,w*blockSize,h*blockSize)
     }
     draw() {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
-        if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)) {
-            player.bounds.y = this.bounds.y-player.bounds.h
-            player.grounded = true;
-        } else {
-            player.grounded = false;
-        }
+
     }
 }
 class Player {
@@ -43,17 +38,23 @@ class Player {
         if (currentKey.get("d")) {
             this.bounds.x += this.speed;
         }
+        console.log(this.grounded)
         if (this.grounded) {
             if (currentKey.get(" ")) {
-                this.bounds.y -= 10
+                this.bounds.y -= 25
                 this.velocity -= 10
             }
         }
     }
 }
-let block1 = new Block(10,45,2,10)
+function MakeBlock(x,y,w) {
+    blocks.push(new Block(x,y,w,1));
+}
 let player = new Player();
-let blocks = [block1]
+let blocks = []
+MakeBlock(0,44,10)
+MakeBlock(0,49,50)
+console.log(blocks)
 function keyboardInit() {
     window.addEventListener("keydown", function (event) {
       currentKey.set(event.key, true);
@@ -64,12 +65,19 @@ function keyboardInit() {
   }
 function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    player.draw();
-    player.update();
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].draw();
         blocks[i].update();
+        if (player.bounds.intersects(blocks[i].bounds) || blocks[i].bounds.intersects(player.bounds)) {
+            console.log("HIT A BLOCK")
+            player.bounds.y = blocks[i].bounds.y-player.bounds.h
+            player.grounded = true;
+        } else {
+            player.grounded = false;
+        }
     }
+    player.draw();
+    player.update();
     requestAnimationFrame(loop);
 }
  
