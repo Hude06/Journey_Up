@@ -9,9 +9,19 @@ class Block {
     }
     draw() {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
+        ctx.strokeStyle = 'red'
+        ctx.lineWidth = 5;
+        ctx.strokeRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
+
     }
     update() {
-
+        if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)) {
+            player.grounded = true;
+            console.log("Intersecting")
+        }
+        if (player.grounded) {
+            player.bounds.y = this.bounds.y - player.bounds.h+5
+        } 
     }
 }
 class Player {
@@ -24,14 +34,19 @@ class Player {
     }
     draw() {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
+        ctx.strokeStyle = 'red'
+        ctx.lineWidth = 5;
+        ctx.strokeRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
         this.velocity += this.gravity;
+        console.log("Grounded", this.grounded)
         if (this.grounded) {
             this.velocity = 1;
-            this.gravity = 0.2
-            for (let i = 0; i < blocks.length; i++) {
-                player.bounds.y = blocks[i].bounds.y - player.bounds.h
+            this.gravity = 0.2;
+            if (currentKey.get(" ")) {
+                this.bounds.y -= 50
+                this.velocity -= 10
             }
         }
         this.bounds.y += this.velocity;
@@ -41,22 +56,12 @@ class Player {
         if (currentKey.get("d")) {
             this.bounds.x += this.speed;
         }
-        if (this.grounded) {
-            if (currentKey.get(" ")) {
-                this.bounds.y -= 25
-                this.velocity -= 10
-            }
-        }
     }
 }
-function MakeBlock(x,y,w) {
-    blocks.push(new Block(x,y,w,1));
-}
+let block1 = new Block(0,48,50,2)
+let block2 = new Block(0,38,10,2)
 let player = new Player();
-let blocks = []
-MakeBlock(0,44,10)
-MakeBlock(0,49,50)
-console.log(blocks)
+let blocks = [block1,block2]
 function keyboardInit() {
     window.addEventListener("keydown", function (event) {
       currentKey.set(event.key, true);
@@ -67,17 +72,12 @@ function keyboardInit() {
   }
 function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    player.update();
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].draw();
         blocks[i].update();
-        if (player.bounds.intersects(blocks[i].bounds) || blocks[i].bounds.intersects(player.bounds)) {
-            player.grounded = true;
-        } else {
-            player.grounded = false;
-        }
     }
     player.draw();
-    player.update();
     requestAnimationFrame(loop);
 }
  
