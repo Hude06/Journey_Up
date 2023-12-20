@@ -30,6 +30,9 @@ class Player {
         if (this.grounded) {
             this.velocity = 1;
             this.gravity = 0.2
+            for (let i = 0; i < blocks.length; i++) {
+                player.bounds.y = blocks[i].bounds.y - player.bounds.h
+            }
         }
         this.bounds.y += this.velocity;
         if (currentKey.get("a")) {
@@ -38,7 +41,6 @@ class Player {
         if (currentKey.get("d")) {
             this.bounds.x += this.speed;
         }
-        console.log(this.grounded)
         if (this.grounded) {
             if (currentKey.get(" ")) {
                 this.bounds.y -= 25
@@ -69,8 +71,6 @@ function loop() {
         blocks[i].draw();
         blocks[i].update();
         if (player.bounds.intersects(blocks[i].bounds) || blocks[i].bounds.intersects(player.bounds)) {
-            console.log("HIT A BLOCK")
-            player.bounds.y = blocks[i].bounds.y-player.bounds.h
             player.grounded = true;
         } else {
             player.grounded = false;
