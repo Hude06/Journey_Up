@@ -16,12 +16,13 @@ class Block {
     }
     update() {
         if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)) {
-            player.grounded = true;
-            console.log("Intersecting")
+            if (player.velocity > 0) {
+                player.grounded = true;
+                player.velocity = 0;
+                player.bounds.y = this.bounds.y - player.bounds.h + 1;
+                console.log("Intersecting");
+            }
         }
-        if (player.grounded) {
-            player.bounds.y = this.bounds.y - player.bounds.h+5
-        } 
     }
 }
 class Player {
@@ -39,14 +40,15 @@ class Player {
         ctx.strokeRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
+        this.grounded = blocks.some(block => block.bounds.intersects(this.bounds) || this.bounds.intersects(block.bounds));
+        console.log("Grounded", this.grounded);
+    
         this.velocity += this.gravity;
-        console.log("Grounded", this.grounded)
         if (this.grounded) {
-            this.velocity = 1;
-            this.gravity = 0.2;
+            this.velocity = 0;
             if (currentKey.get(" ")) {
-                this.bounds.y -= 50
-                this.velocity -= 10
+                this.bounds.y -= 50;
+                this.velocity -= 10;
             }
         }
         this.bounds.y += this.velocity;
@@ -72,11 +74,11 @@ function keyboardInit() {
   }
 function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    player.update();
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].draw();
         blocks[i].update();
     }
+    player.update();
     player.draw();
     requestAnimationFrame(loop);
 }
