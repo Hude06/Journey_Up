@@ -101,7 +101,7 @@ class Player {
     }
 }
 let block2 = new Block(0,43,10,1)
-let block1 = new Block(0,49,50,2)
+let block1 = new Block(0,47,50,2)
 let player = new Player();
 let blocks = [block1,block2]
 function keyboardInit() {
