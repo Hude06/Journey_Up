@@ -9,10 +9,6 @@ class Block {
     }
     draw() {
         ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
-        ctx.strokeStyle = 'red'
-        ctx.lineWidth = 5;
-        ctx.strokeRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
-
     }
     update() {
         if (player.bounds.intersects(this.bounds) || this.bounds.intersects(player.bounds)) {
@@ -27,17 +23,17 @@ class Block {
 }
 class Player {
     constructor() {
-        this.bounds = new Rect(200,50,25,25)
+        this.bounds = new Rect(200,50,70,70)
         this.velocity = 1;
         this.gravity = 0.2;
         this.speed = 7;
         this.grounded = false;
+        this.image = new Image();
+        this.image.src = "./assets/Gray.png"
     }
     draw() {
-        ctx.fillRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
-        ctx.strokeStyle = 'red'
-        ctx.lineWidth = 5;
-        ctx.strokeRect(this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(this.image,this.bounds.x,this.bounds.y,this.bounds.w,this.bounds.h)
     }
     update() {
         this.grounded = blocks.some(block => block.bounds.intersects(this.bounds) || this.bounds.intersects(block.bounds));
